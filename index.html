@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ru" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портфолио | Андраник - Фронтенд-разработчик</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #00040F;
+            --text-color: #e2e8f0;
+            --card-bg: rgba(10, 20, 43, 0.5);
+            --header-bg: rgba(0, 4, 15, 0.5);
+            --cursor-color: #38bdf8;
+        }
+        html.light-mode {
+            --bg-color: #f8fafc;
+            --text-color: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --header-bg: rgba(255, 255, 255, 0.5);
+        }
+        body {
+            background: var(--bg-color);
+            background-size: 400% 400%;
+            animation: animated-bg 25s ease infinite;
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            cursor: none;
+        }
+        @keyframes animated-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        #cursor-follower {
+            position: fixed; top: 0; left: 0;
+            width: 32px; height: 32px;
+            background-color: var(--cursor-color);
+            border-radius: 50%; pointer-events: none;
+            z-index: 9999; transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease, background-color 0.3s ease;
+            filter: blur(10px); opacity: 0.6;
+        }
+        body:hover #cursor-follower { opacity: 0.6; }
+        
+        a, button, [data-magnetic] { cursor: none; }
+
+        .glass-card {
+            background: var(--card-bg); backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d; overflow: hidden;
+        }
+        .glass-card > * { transform: translateZ(20px); }
+        .glass-card .popular-badge { transform: translateZ(40px); }
+
+        .glass-card::before {
+            content: ''; position: absolute;
+            top: var(--y); left: var(--x);
+            transform: translate(-50%, -50%); width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 60%);
+            opacity: 0; transition: opacity 0.5s; pointer-events: none;
+        }
+        .glass-card:hover::before { opacity: 1; }
+
+        .fade-in-up {
+            opacity: 0; transform: translateY(60px) scale(0.98);
+            filter: blur(5px); transition: opacity 0.8s cubic-bezier(0.215, 0.610, 0.355, 1), transform 0.8s cubic-bezier(0.215, 0.610, 0.355, 1), filter 0.8s cubic-bezier(0.215, 0.610, 0.355, 1);
+        }
+        .fade-in-up.is-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+
+        .typing-cursor { display: inline-block; width: 3px; height: 1em; background-color: var(--cursor-color); animation: blink 0.8s infinite; margin-left: 4px; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .animated-gradient-text {
+            background: linear-gradient(90deg, #93c5fd, #38bdf8, #67e8f9, #38bdf8, #93c5fd);
+            background-size: 300% 100%; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; animation: gradient-flow 8s linear infinite;
+        }
+        @keyframes gradient-flow { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+        
+        h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.1; }
+        h2 { font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.2; }
+        
+        #mobile-menu { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out; }
+        #mobile-menu.open { max-height: 500px; }
+
+        .nav-link { position: relative; padding-bottom: 4px; }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 2px; background-color: var(--cursor-color);
+            transform: scaleX(0); transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .nav-link:hover::after { transform: scaleX(1); transform-origin: left; }
+
+        .tech-icon-wrapper { transition: transform 0.4s ease, box-shadow 0.4s ease; }
+        .tech-icon-wrapper:hover { transform: scale(1.15) rotate(10deg); box-shadow: 0 0 25px 5px rgba(56, 189, 248, 0.4); }
+        .tech-icon-wrapper img { transition: transform 0.4s ease; }
+        .tech-icon-wrapper:hover img { transform: rotate(-10deg); }
+
+        /* Стили для новой секции "Языки" */
+        .lang-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            will-change: transform;
+        }
+        .lang-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        .lang-card img {
+            transition: transform 0.3s ease;
+        }
+        .lang-card:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Стили для модального окна */
+        #lang-modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #lang-modal-content {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        #lang-modal.open #lang-modal-content {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="cursor-follower"></div>
+
+    <a href="#contact" id="sticky-cta" data-magnetic class="fixed bottom-5 right-5 z-50 bg-sky-500 text-white font-bold px-5 py-3 rounded-full shadow-lg transform translate-y-24 transition-all duration-500 hover:scale-110 hover:bg-sky-600 flex items-center gap-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        <span class="hidden sm:inline" data-lang="sticky_cta_text">Связаться</span>
+    </a>
+
+    <canvas id="starfield-canvas" class="fixed top-0 left-0 w-full h-full z-0 pointer-events-none"></canvas>
+    
+    <div class="relative z-10">
+        <header id="header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+            <div class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+                <a href="#home" class="text-2xl font-bold tracking-wider transition-transform hover:scale-105" data-magnetic>A.</a>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link hover:text-sky-400 transition-colors duration-300" data-lang="nav_home">Главная</a>
+                    <a href="#process" class="nav-link hover:text-sky-400 transition-colors duration-300" data-lang="nav_process">Процесс</a>
+                    <a href="#languages" class="nav-link hover:text-sky-400 transition-colors duration-300" data-lang="nav_languages">Языки</a>
+                    <a href="#pricing" class="nav-link hover:text-sky-400 transition-colors duration-300" data-lang="nav_price">Цены</a>
+                    <a href="#contact" class="nav-link hover:text-sky-400 transition-colors duration-300" data-lang="nav_contact">Контакты</a>
+                </nav>
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <button id="theme-toggle" data-magnetic class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-800/50 hover:bg-slate-700/70 transition-all duration-300 transform hover:scale-110">
+                        <svg id="theme-icon-sun" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        <svg id="theme-icon-moon" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    </button>
+                    <div class="lang-switcher hidden md:flex items-center gap-3 bg-slate-800/50 px-3 py-1 rounded-full text-sm">
+                        <button onclick="changeLanguage('ru')" class="lang-btn active transition-colors hover:text-white">RU</button>
+                        <span class="text-slate-600">|</span>
+                        <button onclick="changeLanguage('en')" class="lang-btn transition-colors hover:text-white">EN</button>
+                        <span class="text-slate-600">|</span>
+                        <button onclick="changeLanguage('am')" class="lang-btn transition-colors hover:text-white">AM</button>
+                    </div>
+                    <button id="mobile-menu-button" class="md:hidden text-white z-50 w-10 h-10 flex items-center justify-center" data-magnetic>
+                        <svg class="w-7 h-7" id="menu-open-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                        <svg class="w-7 h-7 hidden" id="menu-close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden bg-header-bg backdrop-blur-xl">
+                <div class="flex flex-col items-center py-8 space-y-6">
+                    <a href="#home" class="text-xl hover:text-sky-400 transition" data-magnetic data-lang="nav_home_mobile">Главная</a>
+                    <a href="#process" class="text-xl hover:text-sky-400 transition" data-magnetic data-lang="nav_process_mobile">Процесс</a>
+                    <a href="#languages" class="text-xl hover:text-sky-400 transition" data-magnetic data-lang="nav_languages_mobile">Языки</a>
+                    <a href="#pricing" class="text-xl hover:text-sky-400 transition" data-magnetic data-lang="nav_price_mobile">Цены</a>
+                    <a href="#contact" class="text-xl hover:text-sky-400 transition" data-magnetic data-lang="nav_contact_mobile">Контакты</a>
+                    <div class="lang-switcher flex items-center gap-4 pt-4">
+                        <button onclick="changeLanguage('ru')" class="lang-btn-mobile active text-lg transition-colors hover:text-white">🇷🇺</button>
+                        <button onclick="changeLanguage('en')" class="lang-btn-mobile text-lg transition-colors hover:text-white">🇬🇧</button>
+                        <button onclick="changeLanguage('am')" class="lang-btn-mobile text-lg transition-colors hover:text-white">🇦🇲</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section id="home" class="min-h-screen flex items-center justify-center pt-24 pb-12">
+                <div class="container mx-auto px-6 text-center">
+                    <div class="max-w-4xl mx-auto">
+                        <h1 class="font-black mb-4 fade-in-up animated-gradient-text" data-lang="home_greeting">Привет, я Андраник.</h1>
+                        <h2 class="font-bold text-sky-400 mb-8 fade-in-up" style="transition-delay: 150ms; font-size: clamp(1.5rem, 4vw, 2.5rem);">
+                            <span id="typing-text"></span><span class="typing-cursor"></span>
+                        </h2>
+                        <p class="text-lg md:text-xl max-w-2xl mx-auto mb-10 fade-in-up" style="transition-delay: 300ms;" data-lang="home_description">Я фронтенд-разработчик из Армении. Создаю впечатляющие пользовательские интерфейсы и быстрые, адаптивные сайты, которые привлекают внимание и решают задачи вашего бизнеса.</p>
+                        <div class="flex justify-center items-center flex-wrap gap-4 mb-12 fade-in-up" style="transition-delay: 450ms;">
+                            <span class="font-medium" data-lang="home_tech">Мои технологии:</span>
+                            <div class="flex space-x-4">
+                                <div data-magnetic class="tech-icon-wrapper w-12 h-12 p-2 bg-slate-800/50 rounded-full flex items-center justify-center" title="HTML5"><img src="https://www.svgrepo.com/show/452228/html-5.svg" alt="HTML5 Icon"></div>
+                                <div data-magnetic class="tech-icon-wrapper w-12 h-12 p-2 bg-slate-800/50 rounded-full flex items-center justify-center" title="CSS3"><img src="https://www.svgrepo.com/show/452185/css-3.svg" alt="CSS3 Icon"></div>
+                                <div data-magnetic class="tech-icon-wrapper w-12 h-12 p-2 bg-slate-800/50 rounded-full flex items-center justify-center" title="JavaScript"><img src="https://www.svgrepo.com/show/353925/javascript.svg" alt="JavaScript Icon"></div>
+                                <div data-magnetic class="tech-icon-wrapper w-12 h-12 p-2 bg-slate-800/50 rounded-full flex items-center justify-center" title="Tailwind CSS"><img src="https://www.svgrepo.com/show/374118/tailwind.svg" alt="Tailwind CSS Icon"></div>
+                            </div>
+                        </div>
+                        <a href="#pricing" data-magnetic class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-lg px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-sky-500/40 inline-block fade-in-up" style="transition-delay: 600ms;" data-lang="home_cta">Узнать цены</a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="process" class="py-20 md:py-32">
+                <div class="container mx-auto px-6">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <h2 class="font-black mb-4 fade-in-up" data-lang="process_title">Как мы будем работать?</h2>
+                        <p class="text-lg fade-in-up" data-lang="process_subtitle" style="transition-delay: 150ms;">Прозрачный и понятный процесс от идеи до запуска.</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8 md:gap-12 text-center">
+                        <div class="fade-in-up" style="transition-delay: 300ms;">
+                            <div class="text-6xl font-black text-sky-500/50 mb-4">1</div>
+                            <h3 class="text-xl font-bold mb-2" data-lang="process_step1_title">Обсуждение</h3>
+                            <p class="text-slate-400" data-lang="process_step1_desc">Мы знакомимся, вы рассказываете о проекте, я задаю вопросы для полного понимания задачи.</p>
+                        </div>
+                        <div class="fade-in-up" style="transition-delay: 450ms;">
+                            <div class="text-6xl font-black text-sky-500/50 mb-4">2</div>
+                            <h3 class="text-xl font-bold mb-2" data-lang="process_step2_title">Разработка</h3>
+                            <p class="text-slate-400" data-lang="process_step2_desc">Создаю дизайн и пишу код, регулярно показывая вам промежуточные результаты для обратной связи.</p>
+                        </div>
+                        <div class="fade-in-up" style="transition-delay: 600ms;">
+                            <div class="text-6xl font-black text-sky-500/50 mb-4">3</div>
+                            <h3 class="text-xl font-bold mb-2" data-lang="process_step3_title">Запуск</h3>
+                            <p class="text-slate-400" data-lang="process_step3_desc">После всех правок и вашего финального одобрения, сайт размещается на хостинге и выходит в свет!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- НОВАЯ СЕКЦИЯ: ЯЗЫКИ ПРОГРАММИРОВАНИЯ -->
+            <section id="languages" class="py-20 md:py-32">
+                <div class="container mx-auto px-6">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <h2 class="font-black mb-4 fade-in-up" data-lang="languages_title">Основы Фронтенда</h2>
+                        <p class="text-lg fade-in-up" style="transition-delay: 150ms;" data-lang="languages_subtitle">Ключевые технологии, которые я использую для создания современных веб-интерфейсов. Нажмите, чтобы узнать больше.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <!-- HTML -->
+                        <div class="lang-card glass-card rounded-xl p-6 text-center fade-in-up cursor-pointer" style="transition-delay: 300ms;" data-lang-id="html">
+                            <img src="https://www.svgrepo.com/show/452228/html-5.svg" alt="HTML5 Icon" class="h-20 mx-auto mb-4">
+                            <h3 class="text-2xl font-bold mb-2">HTML</h3>
+                            <p class="text-slate-400" data-lang="languages_html_short">Язык разметки</p>
+                        </div>
+                        <!-- CSS -->
+                        <div class="lang-card glass-card rounded-xl p-6 text-center fade-in-up cursor-pointer" style="transition-delay: 450ms;" data-lang-id="css">
+                            <img src="https://www.svgrepo.com/show/452185/css-3.svg" alt="CSS3 Icon" class="h-20 mx-auto mb-4">
+                            <h3 class="text-2xl font-bold mb-2">CSS</h3>
+                            <p class="text-slate-400" data-lang="languages_css_short">Язык стилей</p>
+                        </div>
+                        <!-- Tailwind -->
+                        <div class="lang-card glass-card rounded-xl p-6 text-center fade-in-up cursor-pointer" style="transition-delay: 600ms;" data-lang-id="tailwind">
+                             <img src="https://www.svgrepo.com/show/374118/tailwind.svg" alt="Tailwind CSS Icon" class="h-20 mx-auto mb-4">
+                            <h3 class="text-2xl font-bold mb-2">Tailwind CSS</h3>
+                            <p class="text-slate-400" data-lang="languages_tailwind_short">CSS-фреймворк</p>
+                        </div>
+                        <!-- JavaScript -->
+                        <div class="lang-card glass-card rounded-xl p-6 text-center fade-in-up cursor-pointer" style="transition-delay: 750ms;" data-lang-id="js">
+                            <img src="https://www.svgrepo.com/show/353925/javascript.svg" alt="JavaScript Icon" class="h-20 mx-auto mb-4">
+                            <h3 class="text-2xl font-bold mb-2">JavaScript</h3>
+                            <p class="text-slate-400" data-lang="languages_js_short">Язык программирования</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="pricing" class="py-20 md:py-32">
+                <div class="container mx-auto px-6">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <h2 class="font-black mb-4 fade-in-up" data-lang="price_title">Цены на услуги</h2>
+                        <p class="text-lg fade-in-up" style="transition-delay: 150ms;" data-lang="price_subtitle">Предлагаю гибкие цены, которые зависят от сложности и масштаба вашего проекта. Моя цель - предоставить максимальную ценность для ваших инвестиций.</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        <div class="glass-card rounded-xl p-8 text-center fade-in-up">
+                            <h3 class="text-2xl font-bold mb-2" data-lang="price_card1_title">Starter</h3>
+                            <p class="text-5xl font-black my-4 animated-gradient-text">$50 - $100</p>
+                            <ul class="text-left space-y-2 mt-6">
+                               <li data-lang="price_card1_feat1">✅ До 3 страниц</li>
+                               <li data-lang="price_card1_feat2">✅ Адаптивный дизайн</li>
+                               <li data-lang="price_card1_feat3">✅ Простые анимации</li>
+                            </ul>
+                        </div>
+                        <div class="glass-card rounded-xl p-8 text-center fade-in-up border-2 border-sky-500/70" style="transition-delay: 150ms;">
+                             <span class="popular-badge bg-sky-500 text-white text-xs font-bold px-3 py-1 rounded-full absolute -top-3 right-5" data-lang="price_popular">Популярно</span>
+                            <h3 class="text-2xl font-bold mb-2" data-lang="price_card2_title">Pro</h3>
+                            <p class="text-5xl font-black my-4 animated-gradient-text">$200 - $300</p>
+                             <ul class="text-left space-y-2 mt-6">
+                                <li data-lang="price_card2_feat1">✅ 4–6 страниц</li>
+                                <li data-lang="price_card2_feat2">✅ Адаптивность под все устройства</li>
+                                <li data-lang="price_card2_feat3">✅ Структура для компании</li>
+                             </ul>
+                        </div>
+                        <div class="glass-card rounded-xl p-8 text-center fade-in-up" style="transition-delay: 300ms;">
+                            <h3 class="text-2xl font-bold mb-2" data-lang="price_card3_title">Elite</h3>
+                            <p class="text-5xl font-black my-4 animated-gradient-text">$300 - $500</p>
+                             <ul class="text-left space-y-2 mt-6">
+                                <li data-lang="price_card3_feat1">✅ Уникальный дизайн</li>
+                                <li data-lang="price_card3_feat2">✅ Сложные анимации</li>
+                                <li data-lang="price_card3_feat3">✅ Особенные элементы под задачу</li>
+                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="py-20 md:py-32">
+                <div class="container mx-auto px-6 text-center">
+                       <div class="max-w-3xl mx-auto">
+                            <h2 class="font-black mb-4 fade-in-up" data-lang="contact_title">Давайте работать вместе!</h2>
+                            <p class="text-lg mb-10 fade-in-up" style="transition-delay: 150ms;" data-lang="contact_subtitle">Готовы начать проект или есть вопросы? Я всегда на связи. Выберите удобный для вас способ общения.</p>
+                            <div class="flex flex-col sm:flex-row justify-center items-center gap-6 fade-in-up" style="transition-delay: 300ms;">
+                                <a href="https://discordapp.com/users/1166752045848592477" target="_blank" data-magnetic class="w-full sm:w-auto flex items-center justify-center gap-3 bg-[#5865F2] hover:bg-[#4f5bda] text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#5865F2]/50">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.885-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4464.8245-.6663 1.284C13.6012 4.0183 12.7898 4 12 4s-.8012.0183-1.6866.1756c-.22-.4596-.4553-.9092-.6663-1.284a.0741.0741 0 0 0-.0785-.0371 19.7913 19.7913 0 0 0-4.885 1.5152.069.069 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0776.0776 0 0 0 .0842-.0276c.4616-.6304.8781-1.2982 1.229-2.0082a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0941.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.5748 1.551 7.1533 1.551 10.7281 0a.0743.0743 0 0 1 .0776.0105c.1201.0991.246.1973.3718.2914a.077.077 0 0 1-.0076.1277c-.5979.3428-1.2194.6447-1.8722.8923a.076.076 0 0 0-.0416.1057c.3509.71.7674 1.3778 1.229 2.0082a.0776.0776 0 0 0 .0842.0276c1.9516-.6067 3.94-1.5219 5.9929-3.0294a.0824.0824 0 0 0 .0312-.0561c.5004-5.177-.8382-9.6739-3.5485-13.6602a.069.069 0 0 0-.0321-.0277zM8.02 15.3312c-.9432 0-1.7102-.7824-1.7102-1.743s.767-1.743 1.7102-1.743c.9431 0 1.71.7824 1.71 1.743.0001.9606-.7669 1.743-1.71 1.743zm7.96 0c-.9432 0-1.7102-.7824-1.7102-1.743s.767-1.743 1.7102-1.743c.9431 0 1.71.7824 1.71 1.743s-.7669 1.743-1.71 1.743z"/></svg>
+                                    <span>Discord</span>
+                                </a>
+                                <a href="https://wa.me/37477532661" target="_blank" data-magnetic class="w-full sm:w-auto flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#1ebe58] text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#25D366]/50">
+                                   <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.79.46 3.48 1.32 4.95L2 22l5.25-1.38c1.41.79 3.02 1.22 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91c0-5.46-4.45-9.91-9.92-9.91zM12.04 20.15h-.01c-1.55 0-3.04-.42-4.34-1.18l-.31-.18l-3.22.84l.86-3.14l-.2-.32c-.84-1.34-1.28-2.9-1.28-4.52c0-4.54 3.69-8.23 8.24-8.23c4.54 0 8.23 3.69 8.23 8.23c0 4.54-3.69 8.23-8.23 8.23zm4.49-5.93c-.25-.12-1.47-.72-1.7-.8c-.23-.08-.39-.12-.56.12c-.17.25-.64.8-.79.96c-.15.17-.29.18-.54.06c-.25-.12-1.06-.39-2.02-1.25c-.75-.67-1.25-1.49-1.4-1.74c-.14-.25-.02-.38.11-.51c.11-.11.25-.29.37-.43s.17-.21.25-.35c.08-.14.04-.26-.02-.38c-.06-.12-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31c-.22.25-.87.85-.87 2.07c0 1.22.89 2.4 1.01 2.56c.12.17 1.76 2.68 4.27 3.75c.59.25 1.05.41 1.41.52c.59.19 1.13.16 1.56.1c.48-.07 1.47-.6 1.67-1.18c.21-.58.21-1.07.14-1.18c-.05-.11-.17-.17-.42-.29z"/></svg>
+                                    <span>WhatsApp</span>
+                                </a>
+                                <a href="https://t.me/+37477532661" target="_blank" data-magnetic class="w-full sm:w-auto flex items-center justify-center gap-3 bg-[#2AABEE] hover:bg-[#2295cc] text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#2AABEE]/50">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="m9.417 15.181-.397 5.584c.568 0 .814-.244 1.109-.537l2.663-2.545 5.518 4.041c1.012.564 1.725.267 1.998-.931L23.622 5.816a1.59 1.59 0 0 0-2.156-1.76l-21.25 8.151c-1.453.564-1.431 1.374-.247 1.741l5.443 1.693L18.953 8.785c.595-.394 1.136-.176.691.218Z"/></svg>
+                                    <span>Telegram</span>
+                                </a>
+                            </div>
+                       </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-transparent py-8">
+            <div class="container mx-auto px-6 text-center text-slate-500">
+                <p data-lang="footer_copy">&copy; 2025 Андраник. Все права защищены.</p>
+                <p data-lang="footer_made">Сделано в Армении.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Модальное окно для языков -->
+    <div id="lang-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-70 p-4 opacity-0 pointer-events-none">
+        <div id="lang-modal-content" class="glass-card rounded-xl p-8 max-w-2xl w-full relative transform scale-95 -translate-y-4 opacity-0">
+            <button id="close-lang-modal" data-magnetic class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 id="lang-modal-title" class="text-3xl font-bold mb-4 animated-gradient-text"></h3>
+            <p id="lang-modal-description" class="text-lg text-slate-300"></p>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const translations = {
+            ru: {
+                nav_home: "Главная", nav_process: "Процесс", nav_languages: "Языки", nav_price: "Цены", nav_contact: "Контакты",
+                nav_home_mobile: "Главная", nav_process_mobile: "Процесс", nav_languages_mobile: "Языки", nav_price_mobile: "Цены", nav_contact_mobile: "Контакты",
+                home_greeting: "Привет, я Андраник.",
+                home_role: "Фронтенд-разработчик из Армении",
+                home_description: "Я фронтенд-разработчик из Армении. Создаю впечатляющие пользовательские интерфейсы и быстрые, адаптивные сайты, которые привлекают внимание и решают задачи вашего бизнеса.",
+                home_tech: "Мои технологии:",
+                home_cta: "Узнать цены",
+                process_title: "Как мы будем работать?",
+                process_subtitle: "Прозрачный и понятный процесс от идеи до запуска.",
+                process_step1_title: "Обсуждение", process_step1_desc: "Мы знакомимся, вы рассказываете о проекте, я задаю вопросы для полного понимания задачи.",
+                process_step2_title: "Разработка", process_step2_desc: "Создаю дизайн и пишу код, регулярно показывая вам промежуточные результаты для обратной связи.",
+                process_step3_title: "Запуск", process_step3_desc: "После всех правок и вашего финального одобрения, сайт размещается на хостинге и выходит в свет!",
+                languages_title: "Основы Фронтенда", languages_subtitle: "Ключевые технологии, которые я использую для создания современных веб-интерфейсов. Нажмите, чтобы узнать больше.",
+                languages_html_short: "Язык разметки", languages_css_short: "Язык стилей", languages_tailwind_short: "CSS-фреймворк", languages_js_short: "Язык программирования",
+                price_title: "Цены на услуги",
+                price_subtitle: "Предлагаю гибкие цены, которые зависят от сложности и масштаба вашего проекта. Моя цель - предоставить максимальную ценность для ваших инвестиций.",
+                price_card1_title: "Starter",
+                price_card1_feat1: "✅ До 3 страниц", price_card1_feat2: "✅ Адаптивный дизайн", price_card1_feat3: "✅ Простые анимации",
+                price_popular: "Популярно",
+                price_card2_title: "Pro",
+                price_card2_feat1: "✅ 4–6 страниц", price_card2_feat2: "✅ Адаптивность под все устройства", price_card2_feat3: "✅ Структура для компании",
+                price_card3_title: "Elite",
+                price_card3_feat1: "✅ Уникальный дизайн", price_card3_feat2: "✅ Сложные анимации", price_card3_feat3: "✅ Особенные элементы под задачу",
+                contact_title: "Давайте работать вместе!",
+                contact_subtitle: "Готовы начать проект или есть вопросы? Я всегда на связи. Выберите удобный для вас способ общения.",
+                sticky_cta_text: "Связаться",
+                footer_copy: "© 2025 Андраник. Все права защищены.", footer_made: "Сделано в Армении."
+            },
+            en: {
+                nav_home: "Home", nav_process: "Process", nav_languages: "Languages", nav_price: "Price", nav_contact: "Contact Me",
+                nav_home_mobile: "Home", nav_process_mobile: "Process", nav_languages_mobile: "Languages", nav_price_mobile: "Price", nav_contact_mobile: "Contact Me",
+                home_greeting: "Hi, I'm Andranik.",
+                home_role: "A Frontend Developer from Armenia",
+                home_description: "I'm a frontend developer from Armenia. I create impressive user interfaces and fast, responsive websites that capture attention and solve your business needs.",
+                home_tech: "My technologies:", home_cta: "Check Prices",
+                process_title: "How will we work?", process_subtitle: "A transparent and clear process from idea to launch.",
+                process_step1_title: "Discussion", process_step1_desc: "We get acquainted, you tell me about the project, and I ask questions to fully understand the task.",
+                process_step2_title: "Development", process_step2_desc: "I create the design and write the code, regularly showing you intermediate results for feedback.",
+                process_step3_title: "Launch", process_step3_desc: "After all edits and your final approval, the site is hosted and goes live!",
+                languages_title: "Frontend Basics", languages_subtitle: "Key technologies I use to create modern web interfaces. Click to learn more.",
+                languages_html_short: "Markup Language", languages_css_short: "Styling Language", languages_tailwind_short: "CSS Framework", languages_js_short: "Programming Language",
+                price_title: "Service Prices",
+                price_subtitle: "I offer flexible prices that depend on the complexity and scale of your project. My goal is to provide maximum value for your investment.",
+                price_card1_title: "Starter",
+                price_card1_feat1: "✅ Up to 3 pages", price_card1_feat2: "✅ Responsive design", price_card1_feat3: "✅ Simple animations",
+                price_popular: "Popular",
+                price_card2_title: "Pro",
+                price_card2_feat1: "✅ 4-6 pages", price_card2_feat2: "✅ Full device responsiveness", price_card2_feat3: "✅ Corporate structure",
+                price_card3_title: "Elite",
+                price_card3_feat1: "✅ Unique design", price_card3_feat2: "✅ Complex animations", price_card3_feat3: "✅ Custom elements for the task",
+                contact_title: "Let's Work Together!",
+                contact_subtitle: "Ready to start a project or have questions? I'm always available. Choose a convenient way to communicate.",
+                sticky_cta_text: "Contact",
+                footer_copy: "© 2025 Andranik. All rights reserved.", footer_made: "Made in Armenia."
+            },
+            am: {
+                nav_home: "Գլխավոր", nav_process: "Գործընթաց", nav_languages: "Լեզուներ", nav_price: "Գներ", nav_contact: "Կապ",
+                nav_home_mobile: "Գլխավոր", nav_process_mobile: "Գործընթաց", nav_languages_mobile: "Լեզուներ", nav_price_mobile: "Գներ", nav_contact_mobile: "Կապ",
+                home_greeting: "Բարև, ես Անդրանիկն եմ։",
+                home_role: "Ֆրոնտենդ ծրագրավորող Հայաստանից",
+                home_description: "Ես ֆրոնտենդ ծրագրավորող եմ Հայաստանից։ Ստեղծում եմ տպավորիչ օգտատիրոջ միջերեսներ և արագ, ադապտիվ կայքեր, որոնք գրավում են ուշադրություն և լուծում ձեր բիզնեսի խնդիրները։",
+                home_tech: "Իմ տեխնոլոգիաները՝", home_cta: "Իմանալ գները",
+                process_title: "Ինչպե՞ս ենք աշխատելու", process_subtitle: "Թափանցիկ և հստակ գործընթաց՝ գաղափարից մինչև գործարկում։",
+                process_step1_title: "Քննարկում", process_step1_desc: "Ծանոթանում ենք, դուք պատմում եք նախագծի մասին, ես հարցեր եմ տալիս՝ խնդիրը լիարժեք հասկանալու համար։",
+                process_step2_title: "Մշակում", process_step2_desc: "Ստեղծում եմ դիզայնը և գրում կոդը՝ պարբերաբար ցույց տալով ձեզ միջանկյալ արդյունքները։",
+                process_step3_title: "Գործարկում", process_step3_desc: "Բոլոր խմբագրումներից և ձեր վերջնական հաստատումից հետո կայքը տեղադրվում է հոսթինգում և հասանելի դառնում բոլորին։",
+                languages_title: "Ֆրոնտենդի հիմունքներ", languages_subtitle: "Հիմնական տեխնոլոգիաները, որոնք ես օգտագործում եմ ժամանակակից վեբ ինտերֆեյսներ ստեղծելու համար: Սեղմեք՝ ավելին իմանալու համար:",
+                languages_html_short: "Նշագրման լեզու", languages_css_short: "Ոճավորման լեզու", languages_tailwind_short: "CSS-ֆրեյմվորք", languages_js_short: "Ծրագրավորման լեզու",
+                price_title: "Ծառայությունների գները",
+                price_subtitle: "Առաջարկում եմ ճկուն գներ, որոնք կախված են ձեր նախագծի բարդությունից և մասշտաբից։ Իմ նպատակն է ապահովել առավելագույն արժեք ձեր ներդրումների համար։",
+                price_card1_title: "Starter",
+                price_card1_feat1: "✅ Մինչև 3 էջ", price_card1_feat2: "✅ Ադապտիվ դիզայն", price_card1_feat3: "✅ Պարզ անիմացիաներ",
+                price_popular: "Հայտնի է",
+                price_card2_title: "Pro",
+                price_card2_feat1: "✅ 4-6 էջ", price_card2_feat2: "✅ Ադապտացում բոլոր սարքերի համար", price_card2_feat3: "✅ Կորպորատիվ կառուցվածք",
+                price_card3_title: "Elite",
+                price_card3_feat1: "✅ Յուրահատուկ դիզայն", price_card3_feat2: "✅ Բարդ անիմացիաներ", price_card3_feat3: "✅ Հատուկ տարրեր խնդրի համար",
+                contact_title: "Եկեք աշխատենք միասին։",
+                contact_subtitle: "Պատրա՞ստ եք սկսել նախագիծ, թե՞ ունեք հարցեր։ Ես միշտ կապի մեջ եմ։ Ընտրեք ձեզ հարմար հաղորդակցման միջոց։",
+                sticky_cta_text: "Կապ",
+                footer_copy: "© 2025 Անդրանիկ։ Բոլոր իրավունքները պաշտպանված են։", footer_made: "Ստեղծված է Հայաստանում։"
+            }
+        };
+
+        const languageDetails = {
+            html: {
+                ru: { title: "HTML: Скелет Веб-страницы", description: "HTML (HyperText Markup Language) — это стандартный язык разметки для создания веб-страниц. Он определяет структуру и содержание страницы: заголовки, параграфы, изображения, ссылки и другие элементы. Без HTML не было бы интернета, каким мы его знаем. Это основа основ, первый шаг в мир веб-разработки." },
+                en: { title: "HTML: The Skeleton of a Web Page", description: "HTML (HyperText Markup Language) is the standard markup language for creating web pages. It defines the structure and content of a page: headings, paragraphs, images, links, and other elements. Without HTML, the internet as we know it would not exist. It's the absolute foundation, the first step into the world of web development." },
+                am: { title: "HTML: Վեբ-էջի կմախքը", description: "HTML-ը (HyperText Markup Language) վեբ էջեր ստեղծելու ստանդարտ նշագրման լեզու է: Այն սահմանում է էջի կառուցվածքն ու բովանդակությունը՝ վերնագրեր, պարբերություններ, նկարներ, հղումներ և այլ տարրեր: Առանց HTML-ի՝ ինտերնետը, որը մենք գիտենք, գոյություն չէր ունենա: Դա հիմքերի հիմքն է, առաջին քայլը դեպի վեբ մշակման աշխարհ:" }
+            },
+            css: {
+                ru: { title: "CSS: Визуальный Стиль", description: "CSS (Cascading Style Sheets) отвечает за внешний вид HTML-документов. С помощью CSS мы задаем цвета, шрифты, отступы, расположение элементов и создаем адаптивный дизайн, который отлично выглядит на любом устройстве, от телефона до большого монитора. CSS превращает простой текст в красивый и удобный интерфейс." },
+                en: { title: "CSS: The Visual Style", description: "CSS (Cascading Style Sheets) is responsible for the appearance of HTML documents. With CSS, we set colors, fonts, spacing, element positioning, and create responsive designs that look great on any device, from a phone to a large monitor. CSS transforms plain text into a beautiful and user-friendly interface." },
+                am: { title: "CSS: Տեսողական ոճը", description: "CSS-ը (Cascading Style Sheets) պատասխանատու է HTML փաստաթղթերի արտաքին տեսքի համար: CSS-ի միջոցով մենք սահմանում ենք գույները, տառատեսակները, բացատները, տարրերի դասավորությունը և ստեղծում ենք ադապտիվ դիզայն, որը հիանալի տեսք ունի ցանկացած սարքի վրա՝ հեռախոսից մինչև մեծ մոնիտոր: CSS-ը պարզ տեքստը վերածում է գեղեցիկ և հարմարավետ ինտերֆեյսի:" }
+            },
+            tailwind: {
+                ru: { title: "Tailwind CSS: Утилитарный Подход", description: "Tailwind CSS — это современный CSS-фреймворк, который позволяет создавать уникальные дизайны без написания традиционного CSS. Вместо готовых компонентов (как в Bootstrap) он предоставляет утилитарные классы (например, `text-center`, `p-4`), которые можно комбинировать прямо в HTML. Это ускоряет разработку и делает поддержку стилей проще." },
+                en: { title: "Tailwind CSS: The Utility-First Approach", description: "Tailwind CSS is a modern CSS framework that allows for creating unique designs without writing traditional CSS. Instead of pre-styled components (like in Bootstrap), it provides utility classes (e.g., `text-center`, `p-4`) that can be combined directly in the HTML. This speeds up development and makes maintaining styles easier." },
+                am: { title: "Tailwind CSS: Օգտակենտրոն մոտեցում", description: "Tailwind CSS-ը ժամանակակից CSS-ֆրեյմվորք է, որը թույլ է տալիս ստեղծել յուրահատուկ դիզայններ՝ առանց ավանդական CSS գրելու: Պատրաստի բաղադրիչների փոխարեն (ինչպես Bootstrap-ում) այն տրամադրում է օգտակենտրոն դասեր (օրինակ՝ `text-center`, `p-4`), որոնք կարելի է համատեղել անմիջապես HTML-ում: Սա արագացնում է մշակումը և հեշտացնում ոճերի պահպանումը:" }
+            },
+            js: {
+                ru: { title: "JavaScript: Интерактивность и Логика", description: "JavaScript — это язык программирования, который оживляет веб-страницы. Он отвечает за всю интерактивность: анимации, всплывающие окна, проверку форм, взаимодействие с сервером и многое другое. Если HTML — это скелет, а CSS — кожа, то JavaScript — это мозг и мышцы, которые заставляют всё двигаться и работать." },
+                en: { title: "JavaScript: Interactivity and Logic", description: "JavaScript is the programming language that brings web pages to life. It handles all interactivity: animations, pop-ups, form validation, server communication, and much more. If HTML is the skeleton and CSS is the skin, then JavaScript is the brain and muscles that make everything move and work." },
+                am: { title: "JavaScript: Ինտերակտիվություն և տրամաբանություն", description: "JavaScript-ը ծրագրավորման լեզու է, որը կենդանացնում է վեբ էջերը: Այն պատասխանատու է բոլոր ինտերակտիվ գործողությունների համար՝ անիմացիաներ, բացվող պատուհաններ, ձևերի ստուգում, սերվերի հետ փոխազդեցություն և շատ ավելին: Եթե HTML-ը կմախքն է, իսկ CSS-ը՝ մաշկը, ապա JavaScript-ը ուղեղն ու մկաններն են, որոնք ստիպում են ամեն ինչ շարժվել և աշխատել:" }
+            }
+        };
+
+        const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        let currentLang = 'ru';
+        
+        // --- Language Switcher ---
+        const typingTextElement = document.getElementById('typing-text');
+        let currentTypingText = '';
+        let charIndex = 0;
+        let typingTimeout;
+
+        window.changeLanguage = (lang) => {
+            currentLang = lang;
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                const key = el.getAttribute('data-lang');
+                if (translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            
+            clearTimeout(typingTimeout);
+            typingTextElement.textContent = '';
+            charIndex = 0;
+            currentTypingText = translations[lang].home_role;
+            type();
+
+            document.querySelectorAll('.lang-btn, .lang-btn-mobile').forEach(btn => {
+                const isActive = btn.getAttribute('onclick') === `changeLanguage('${lang}')`;
+                btn.classList.toggle('active', isActive);
+                btn.classList.toggle('text-sky-400', isActive);
+                btn.classList.toggle('text-slate-500', !isActive);
+            });
+        };
+        
+        function type() {
+            if (charIndex < currentTypingText.length) {
+                typingTextElement.textContent += currentTypingText.charAt(charIndex++);
+                typingTimeout = setTimeout(type, 100);
+            }
+        }
+        
+        // --- Fade-in Animation on Scroll ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+
+        // --- 3D Card Tilt Effect ---
+        if (!isTouchDevice()) {
+            document.querySelectorAll('.glass-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const { width, height } = rect;
+                    const rotateX = (y / height - 0.5) * -15;
+                    const rotateY = (x / width - 0.5) * 15;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+                    card.style.setProperty('--x', `${x}px`);
+                    card.style.setProperty('--y', `${y}px`);
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+                });
+            });
+        }
+        
+        // Themes
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-icon-sun');
+        const moonIcon = document.getElementById('theme-icon-moon');
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                document.documentElement.classList.remove('light-mode');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.add('light-mode');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+            // Переинициализация звезд при смене темы для обновления цвета
+            if (window.initStars) {
+                initStars();
+            }
+        };
+        
+        const userTheme = localStorage.getItem('theme');
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        applyTheme(userTheme === 'dark' || (!userTheme && systemTheme) ? 'dark' : 'light');
+
+        themeToggle.addEventListener('click', () => {
+            const newTheme = document.documentElement.classList.contains('light-mode') ? 'dark' : 'light';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+        
+        // ---Header---
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('bg-header-bg', window.scrollY > 50);
+            header.classList.toggle('backdrop-blur-xl', window.scrollY > 50);
+            header.classList.toggle('shadow-lg', window.scrollY > 50);
+        });
+
+        // Mobile menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const openIcon = document.getElementById('menu-open-icon');
+        const closeIcon = document.getElementById('menu-close-icon');
+        const toggleMenu = () => {
+            mobileMenu.classList.toggle('open');
+            openIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        };
+        mobileMenuButton.addEventListener('click', toggleMenu);
+        mobileMenu.querySelectorAll('a, button').forEach(link => {
+            link.addEventListener('click', () => {
+                if(mobileMenu.classList.contains('open')) {
+                    toggleMenu();
+                }
+            });
+        });
+
+        // Background stars
+        const canvas = document.getElementById('starfield-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        function setCanvasSize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        class Star {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.z = Math.random() * canvas.width;
+            }
+            update() {
+                this.z -= 1.2;
+                if (this.z < 1) this.reset();
+            }
+            show() {
+                let sx = (this.x - canvas.width / 2) * (canvas.width / this.z) + canvas.width / 2;
+                let sy = (this.y - canvas.height / 2) * (canvas.width / this.z) + canvas.height / 2;
+                let r = (1 - this.z / canvas.width) * 1.5;
+                if (sx > 0 && sx < canvas.width && sy > 0 && sy < canvas.height) {
+                    ctx.beginPath();
+                    ctx.arc(sx, sy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = document.documentElement.classList.contains('light-mode') ? 'rgba(15, 23, 42, 0.4)' : 'rgba(255, 255, 255, 0.6)';
+                    ctx.fill();
+                }
+            }
+        }
+        window.initStars = () => {
+            stars = [];
+            let numStars = (canvas.width * canvas.height) / 4000;
+            for (let i = 0; i < numStars; i++) stars.push(new Star());
+        }
+        function animateStars() {
+            requestAnimationFrame(animateStars);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => { star.update(); star.show(); });
+        }
+        window.addEventListener('resize', () => { setCanvasSize(); initStars(); });
+        
+        // Sticky CTA
+        const stickyCTA = document.getElementById('sticky-cta');
+        const homeSection = document.getElementById('home');
+        const showStickyCTA = () => {
+            stickyCTA.classList.toggle('translate-y-24', window.scrollY < homeSection.offsetHeight * 0.8);
+        };
+        window.addEventListener('scroll', showStickyCTA);
+        
+        // Custom Cursor & Magnetic effect
+        if (!isTouchDevice()) {
+            const cursorFollower = document.getElementById('cursor-follower');
+            let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0;
+            const speed = 0.1;
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX; mouseY = e.clientY;
+            });
+            function animateCursor() {
+                followerX += (mouseX - followerX) * speed;
+                followerY += (mouseY - followerY) * speed;
+                cursorFollower.style.left = `${followerX}px`;
+                cursorFollower.style.top = `${followerY}px`;
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+            
+            const setupMagneticElements = () => {
+                document.querySelectorAll('[data-magnetic]').forEach(el => {
+                    el.addEventListener('mousemove', function(e) {
+                        const rect = this.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        this.style.transition = 'transform 0.1s ease-out';
+                        this.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+                        cursorFollower.style.width = '64px';
+                        cursorFollower.style.height = '64px';
+                        cursorFollower.style.backgroundColor = 'rgba(56, 189, 248, 0.5)';
+                    });
+                    el.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translate(0,0)';
+                        this.style.transition = 'transform 0.3s ease-out';
+                        cursorFollower.style.width = '32px';
+                        cursorFollower.style.height = '32px';
+                        cursorFollower.style.backgroundColor = 'var(--cursor-color)';
+                    });
+                });
+            }
+            setupMagneticElements();
+        } else {
+             document.getElementById('cursor-follower').style.display = 'none';
+        }
+
+        // Language Modal Logic
+        const langModal = document.getElementById('lang-modal');
+        const langModalContent = document.getElementById('lang-modal-content');
+        const langModalTitle = document.getElementById('lang-modal-title');
+        const langModalDescription = document.getElementById('lang-modal-description');
+        const closeLangModalBtn = document.getElementById('close-lang-modal');
+
+        document.querySelectorAll('.lang-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const langId = card.dataset.langId;
+                const details = languageDetails[langId][currentLang];
+                
+                langModalTitle.textContent = details.title;
+                langModalDescription.textContent = details.description;
+
+                langModal.classList.remove('pointer-events-none', 'opacity-0');
+                langModal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        const closeLangModal = () => {
+            langModal.classList.add('opacity-0');
+            langModalContent.classList.add('scale-95', '-translate-y-4', 'opacity-0');
+            setTimeout(() => {
+                langModal.classList.add('pointer-events-none');
+                langModal.classList.remove('open');
+                document.body.style.overflow = '';
+            }, 300);
+        };
+
+        closeLangModalBtn.addEventListener('click', closeLangModal);
+        langModal.addEventListener('click', (e) => {
+            if (e.target === langModal) {
+                closeLangModal();
+            }
+        });
+        
+        // Initial setup
+        setCanvasSize();
+        initStars();
+        animateStars();
+        showStickyCTA();
+        changeLanguage('ru');
+    });
+    </script>
+</body>
+</html>
